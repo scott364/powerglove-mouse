@@ -1,0 +1,144 @@
+int Finger1 = 2;
+int Finger2 = 3;
+int Finger3 = 4;
+int Finger4 = 5;
+
+int avg1;
+int avg2;
+int avg3;
+int avg4;
+
+
+void setup(){
+  
+  Serial.begin(9600);
+ delay(5000);//5 seconds
+   Serial.println("Calibrating: Keep Fingers in OPEN position");
+    Serial.println("3");
+       delay(1000);//1 second
+        int open11= analogRead(Finger1);
+     int open21= analogRead(Finger2);
+     int open31 = analogRead(Finger3);
+     int open41= analogRead(Finger4);
+     
+     Serial.println("2");
+        delay(1000);//1 second
+       int open12= analogRead(Finger1);
+     int open22= analogRead(Finger2);
+     int open32 = analogRead(Finger3);
+     int open42= analogRead(Finger4);
+     
+   
+      Serial.println("1");
+        delay(1000);//1 second
+         int open13= analogRead(Finger1);
+     int open23= analogRead(Finger2);
+     int open33 = analogRead(Finger3);
+     int open43= analogRead(Finger4);
+   
+      Serial.println("Calibrating Pt 2: Keep Fingers in CLOSED position");
+      delay(3000);//1 second
+    Serial.println("3");
+       delay(1000);//1 second
+  int closed11= analogRead(Finger1);
+     int closed21= analogRead(Finger2);
+     int closed31 = analogRead(Finger3);
+     int closed41= analogRead(Finger4);
+   
+     Serial.println("2");
+        delay(1000);//1 second
+       int closed12= analogRead(Finger1);
+     int closed22= analogRead(Finger2);
+     int closed32 = analogRead(Finger3);
+     int closed42= analogRead(Finger4);
+   
+      Serial.println("1");
+    int closed13= analogRead(Finger1);
+     int closed23= analogRead(Finger2);
+     int closed33 = analogRead(Finger3);
+     int closed43= analogRead(Finger4);
+   
+    Serial.println("Calibration complete");
+    int open1avg=(open11+open12+open13)/3;
+    int open2avg=(open21+open22+open23)/3;
+    int open3avg=(open31+open32+open33)/3;
+    int open4avg=(open41+open42+open43)/3;
+    int closed1avg=(closed11+closed12+closed13)/3;
+    int closed2avg=(closed21+closed22+closed23)/3;
+    int closed3avg=(closed31+closed32+closed33)/3;
+    int closed4avg=(closed41+closed42+closed43)/3;
+    
+     avg1=(open1avg+closed1avg)/2;
+     avg2=(open2avg+closed2avg)/2;
+    avg3=(open3avg+closed3avg)/2;
+    avg4=(open4avg+closed4avg)/2;
+    
+    Serial.print("Open Averages");
+   Serial.print(open1avg);
+   Serial.print("     ");
+    Serial.print(open2avg);
+   Serial.print("     ");
+    Serial.print(open3avg);
+   Serial.print("     ");
+    Serial.print(open4avg);
+   Serial.println("     ");
+   Serial.print("Closed Averages");
+   Serial.print(closed1avg);
+   Serial.print("     ");
+    Serial.print(closed2avg);
+   Serial.print("     ");
+    Serial.print(closed3avg);
+   Serial.print("     ");
+    Serial.print(closed4avg);
+   Serial.print("     ");
+      Serial.print("Boundaries");
+   Serial.print(avg1);
+   Serial.print("     ");
+    Serial.print(avg2);
+   Serial.print("     ");
+    Serial.print(avg3);
+   Serial.print("     ");
+    Serial.print(avg4);
+   Serial.print("     ");
+     delay(4000);
+}
+
+ void loop(){
+  
+    
+    int FingerV1 = analogRead(Finger1);
+   int FingerV2 = analogRead(Finger2);
+   int FingerV3 = analogRead(Finger3);
+   int FingerV4 = analogRead(Finger4);
+   
+   
+
+   if (FingerV1 > avg1) Serial.print("Open");
+   else Serial.print("Closed");
+   
+    Serial.print("         ");
+  
+   if (FingerV2 > avg2) Serial.print("Open");
+   else Serial.print("Closed");
+   
+    Serial.print("         ");
+   
+   if (FingerV3 > avg3) Serial.print("Open");
+   else Serial.print("Closed");
+   
+   Serial.print("         ");
+   
+   if (FingerV4 > avg4) Serial.println("Open");
+   else Serial.println("Closed");
+   
+    Serial.print("   ");
+   Serial.print(FingerV1);
+      Serial.print("         ");
+         Serial.print(FingerV2);
+              Serial.print("         ");
+            Serial.print(FingerV3);
+                   Serial.print("         ");
+   Serial.println(FingerV4);
+  
+   delay(1000);
+}
