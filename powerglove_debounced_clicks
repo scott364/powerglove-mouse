@@ -1,0 +1,112 @@
+
+const int xAxis = 0;  //analog sensor for X axis  
+const int yAxis = 1;  // analog sensor for Y axis
+int FingerV2 = 5; //powerglove index finger , on analog pin 5---will be used for left click       
+int FingerV3 = 3; //powerglove middle finger , on analog pin 3 --will be used for right click
+int FingerV4 = 2; //powerglove ring finger , on analog pin 2  --will be used to toggle precise mouse movement
+                  //analog pin 4, the thumb sensor, is unused, as your thumb will be busy moving the joystick
+ 
+//variables for finger position
+int fingerstate2;  // the current reading from the input pin
+int fingbool2=1;   //initial setting
+int fingerstate3;            
+int fingbool3=1;
+int fingerstate4;              
+int fingbool4=1;
+
+
+//debounce code seen in various forms below is borrowed and modified from http://www.arduino.cc/en/Tutorial/debounce
+int lastfingerstate2 = 1;   // the previous reading from the input pin
+int lastfingerstate3 = 1;    
+int lastfingerstate4 = 1;    
+// the following variables are long's because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+
+long fingerlastDebounceTime2 = 0;  // the last time the output pin was toggled
+long fingerlastDebounceTime3 = 0;   
+long fingerlastDebounceTime4 = 0;   
+long fingerdebounceDelay = 100;    // the debounce time; increase this if the output flickers
+
+int avg2=27; //average value between open and closed finger positions
+int avg3=43;  
+int avg4=51;  
+
+/* The following fingers are on the following channels, followed by
+boundary output (avg between open and closed)  Feel free to adjust them based on finger position desired for click to be registered by code:
+ring: 2   51
+middle:3  43
+thumb:4   45
+index: 5   27 */
+
+void setup() {
+ // initialize the button pin as a input:
+  Serial.begin(9600);
+   Mouse.begin();
+}
+
+void loop() {
+  
+
+  fingbool2= (analogRead(FingerV2))/avg2;
+  fingbool3= (analogRead(FingerV3))/avg3;
+  fingbool4= (analogRead(FingerV4))/avg4;
+//larger than avg= greater than 1, fingbool is true
+   //smaller than avg= less than 1,fingbool is false
+                         
+  // check to see if you just pressed the button 
+  // (i.e. the input went from 0 to 1),  and you've waited 
+  // long enough since the last press to ignore any noise: 
+  // If the switch changed, due to noise or pressing:
+  if (fingbool2 != lastfingerstate2) {
+    fingerlastDebounceTime2 = millis();  // reset the debouncing timer
+  } 
+   if (fingbool4 != lastfingerstate3) {
+    fingerlastDebounceTime3 = millis();  // reset the debouncing timer
+  } 
+  if (fingbool4 != lastfingerstate4) {
+    fingerlastDebounceTime4 = millis();  // reset the debouncing timer
+  } 
+  //pointer finger = single click
+  if ((millis() - fingerlastDebounceTime2) > fingerdebounceDelay) {
+    // whatever the reading is at, it's been there for longer
+    // than the debounce delay, so take it as the actual current state:
+
+   // if the button state has changed:
+    if (fingbool2 != fingerstate2) {
+      fingerstate2 = fingbool2;
+   
+ 
+    if (fingbool2 == 0) {
+         Mouse.press(MOUSE_LEFT);   
+      }
+      else  {
+       Mouse.release(MOUSE_LEFT);
+      }
+   
+    }
+  }  
+  //middle finger = rightclick
+    if ((millis() - fingerlastDebounceTime3) > fingerdebounceDelay) {
+    // whatever the reading is at, it's been there for longer
+    // than the debounce delay, so take it as the actual current state:
+
+   // if the button state has changed:
+    if (fingbool3 != fingerstate3) {
+      fingerstate3 = fingbool3;
+   
+ 
+    if (fingbool3 == 0) {
+         Mouse.press(MOUSE_RIGHT);
+      }
+      else { 
+        Mouse.release(MOUSE_RIGHT);
+    
+   }
+  } 
+    }
+    
+lastfingerstate2 = fingbool2;
+lastfingerstate3 = fingbool3;
+lastfingerstate4 = fingbool4;
+
+}
