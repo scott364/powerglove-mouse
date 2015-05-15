@@ -1,6 +1,4 @@
 
-const int xAxis = 0;  //analog sensor for X axis  
-const int yAxis = 1;  // analog sensor for Y axis
 int FingerV2 = 5; //powerglove index finger , on analog pin 5---will be used for left click       
 int FingerV3 = 3; //powerglove middle finger , on analog pin 3 --will be used for right click
 int FingerV4 = 2; //powerglove ring finger , on analog pin 2  --will be used to toggle precise mouse movement
