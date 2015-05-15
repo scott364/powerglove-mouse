@@ -1,6 +1,6 @@
 
-int FingerV2 = 5; //powerglove index finger , on analog pin 5---will be used for left click       
-int FingerV3 = 3; //powerglove middle finger , on analog pin 3 --will be used for right click
+int FingerV2 = 1; //powerglove index finger , on analog pin 5---will be used for left click       
+int FingerV3 = 2; //powerglove middle finger , on analog pin 3 --will be used for right click
 
 //variables for finger position
 int fingerstate2;  // the current reading from the input pin
