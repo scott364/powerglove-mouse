@@ -1,0 +1,115 @@
+boolean debugmode=true; //  enable/disable debugging 
+int debugcounter=0; //incrementing then resetting counter for debug output 
+
+const int xAxis = 0;  //analog sensor for X axis  
+const int yAxis = 1;  // analog sensor for Y axis
+
+
+ //mouse code seen in various forms below is borrowed and modified from http://www.arduino.cc/en/Tutorial/JoystickMouseControl
+int range = 24;   // sensitivity: output range of X or Y movement  If this is lowered by enough, no diagonal mouse movement is registered...for some reason. 
+int responseDelay = 2;       // response delay of the mouse, in ms
+//int threshold = range/6;      // resting threshold
+int threshold = range/4;
+int center = range/2;   // resting position value
+//int center = range/3;
+int minima[] = { 
+  1023, 1023};  // actual analogRead minima for {x, y}
+int maxima[] = {
+  0,0};   // actual analogRead maxima for {x, y}   This will increase as mouse is calibrated in first 5 seconds of use
+  
+  
+int axis[] = {xAxis, yAxis};     // pin numbers for {x, y}
+int mouseReading[2];          // final mouse readings for {x, y}
+boolean precisionmode= false;//precision mode, activated by ring finger
+boolean borderdetect=true; //initial mouse border detection, turns off after 5 seconds. 
+
+void setup() {
+ // initialize the button pin as a input:
+  Serial.begin(9600);
+   Mouse.begin();
+  
+}
+
+void loop() {
+  
+//mouse code is below, mostly stolen from arduino's mouse tutorial
+
+// read and scale the two axes:
+  int xReading = readAxis(0);
+  int yReading = readAxis(1);
+  
+  if (xReading > 0){
+  xReading++;}
+  if (yReading < 0){
+ yReading--;}
+xReading = xReading * -1;//added text to invert x axis
+
+// move the mouse:
+
+
+    Mouse.move(xReading, yReading, 0);
+    delay(responseDelay);
+
+   
+  // debugging output
+  if (debugmode==true){
+   if (debugcounter > 100) {
+      Serial.print(" | Mouse X: ");
+    Serial.print(xReading);
+    Serial.print(" Y: ");
+    Serial.print(yReading);
+    Serial.print(" |BorderDetect:");
+    Serial.print(borderdetect);
+    debugcounter= 0;//reset counter
+    } 
+    debugcounter++;
+}
+}
+
+/* reads an axis (0 or 1 for x or y) and scales the 
+  analog input range to a range from 0 to <range>*/
+
+int readAxis(int axisNumber) { //Code mostly stolen from Arduino's mouse guide webpage
+  int distance = 0;    // distance from center of the output range
+
+  // read the analog input:
+  int reading = analogRead(axis[axisNumber]);
+
+// of the current reading exceeds the max or min for this axis,
+// reset the max or min:
+
+if (millis() > 5000){ //after 5 seconds, do not allow any more border detection (mouse calibration) 
+  borderdetect=false;
+}
+
+if (borderdetect==true){
+  if (reading < minima[axisNumber]) {
+    minima[axisNumber] = reading;
+     Serial.print("Axis: ");
+    Serial.print(axisNumber);
+    Serial.print("\tNew Min: ");
+    Serial.println(reading);
+  }
+  if (reading > maxima[axisNumber]) {
+    maxima[axisNumber] = reading;
+     Serial.print("Axis: ");
+    Serial.print(axisNumber);
+    Serial.print("\tNew Max: ");
+    Serial.println(reading);
+  }
+}
+  // map the reading from the analog input range to the output range:
+  reading = map(reading, minima[axisNumber], maxima[axisNumber], 0, range);
+ // if the output reading is outside from the
+ // rest position threshold,  use it:
+  if (abs(reading - center) > threshold) {
+    distance = (reading - center);
+  } 
+  // the Y axis needs to be inverted in order to 
+  // map the movemment correctly:
+  if (axisNumber == 1) {
+    distance = -distance;
+  }
+  // return the distance for this axis:
+  return distance;
+}
